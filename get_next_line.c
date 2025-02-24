@@ -26,6 +26,7 @@ int	main(void)
 
 char	*get_next_line(int fd)
 {
+	//can sort of see how static n would be important for multiple gnl calls but somehow even on a single call, without making it static, it segfaults
 	static size_t	n;
 	size_t	i;
 	size_t	j;
@@ -35,16 +36,16 @@ char	*get_next_line(int fd)
 	void	*temp;
 	void	*buffer;
 	char	*placeholder1;
-	size_t	p1_index;
+	size_t	pl_index;
 	char	*placeholder2;
-	size_t	p2_index;
+	//size_t	p2_index;
 	char	*ptr2line;
 
 	i = 0;
 	j = 0;
 	readvalue = 5;
-	p1_index = 0;
-	p2_index = 0;
+	pl_index = 0;
+	//p2_index = 0;
 	//this buffer is to store the read data from the read function call (but how much to malloc?)
 	//use calloc heren
 	index = BUFFER_SIZE;
@@ -69,12 +70,14 @@ char	*get_next_line(int fd)
 		placeholder2 = ft_calloc(BUFFER_SIZE + (BUFFER_SIZE * readiter) + 1, 1);
 		if (strlen(placeholder1) > 0)
 		{
-			while (placeholder1[p1_index])
+			while (placeholder1[pl_index])
 			{
-				placeholder2[p2_index++] = placeholder1[p1_index++];
+				placeholder2[pl_index] = placeholder1[pl_index];
+				pl_index++;
 				printf("loop1\n");
 			}
-			//might need to reset the above 2 indices
+			pl_index = 0;
+			printf("This is placeholder2: %s\n", placeholder2);//might need to reset the above 2 indices
 		}
 		free(placeholder1);
 		placeholder1 = ft_calloc(BUFFER_SIZE + (BUFFER_SIZE * readiter) + 1, 1);
@@ -109,8 +112,12 @@ char	*get_next_line(int fd)
 	       	}
 		readiter++;
 	}
-	if (readvalue == 0)//Meaning EOF found
+	if (buffer_check(((char *)buffer), BUFFER_SIZE) == 0)
+	{	
+		return (placeholder1);
+	//if (readvalue == 0)//Meaning EOF found
 		printf("The EOF was found, read value is 0: %d\n", readvalue);
+	}
 }
 
 //while loop to check buffer for nl or null terminating character, and creating line to be returned
