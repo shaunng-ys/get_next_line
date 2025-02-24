@@ -1,0 +1,1 @@
+this is a test for the read function, not quite sure about all the behaviours though tee hee

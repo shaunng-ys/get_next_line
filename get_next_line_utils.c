@@ -23,7 +23,7 @@ void	*ft_calloc(size_t count, size_t size)
 	if (count == 0 || size == 0)
 	{
 		p2s = malloc(1);
-		((char *) p2s[0] = 0)
+		(((char *)p2s)[0] = 0);
 		return (p2s);
 	}
 	if (size >= INT_MAX / count)
@@ -31,7 +31,10 @@ void	*ft_calloc(size_t count, size_t size)
 	p2s = malloc(count * size);
 	if (p2s == 0)
 		return (NULL);
-	while (n++)
-		p2s[i++] = '\0';
+	while (n)
+	{
+		((char *)p2s)[i++] = '\0';
+		n--;
+	}
 	return (p2s);
 }
