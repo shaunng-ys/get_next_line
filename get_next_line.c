@@ -74,18 +74,23 @@ char	*get_next_line(int fd)
 	Every time you call read, you read some bytes from the current position, and also advance the current position.
 	You can use lseek to change the current position.
 	*/
-	if (strlen(leftover) > 0)
+	//might be an issue where leftover is unitialised in the first instance/ iteration/ function call of gnl
+	if (leftover != NULL)
 	{
-		printf("Now commencing operation: no character left behind! - Characters to be saved: %s\n", leftover);
-		free(placeholder1);
-		placeholder1 = ft_calloc(strlen(leftover) + 1, sizeof(char));
-		while (count < strlen(leftover))
+		if (strlen(leftover) > 0)
+		//if (leftover[0])
 		{
-			placeholder1[count] = leftover[count];
-			count++;
+			printf("Now commencing operation: no character left behind! - Characters to be saved: %s\n", leftover);
+			free(placeholder1);
+			placeholder1 = ft_calloc(strlen(leftover) + 1, sizeof(char));
+			while (count < strlen(leftover))
+			{
+				placeholder1[count] = leftover[count];
+				count++;
+			}
+			printf("Characters that have been saved: %s\n", placeholder1);
+			free(leftover);
 		}
-		printf("Characters that have been saved: %s\n", placeholder1);
-		free(leftover);
 	}
 
 	while (readvalue > 0)
@@ -133,13 +138,17 @@ char	*get_next_line(int fd)
 			while (placeholder2[j])
 			{
 				placeholder1[j] = placeholder2[j];
-				printf("loop2: placeholder2: %s, placeholder1: %s\n");
+				printf("loop2: placeholder2: %s, placeholder1: %s\n", placeholder2, placeholder1);
 				j++;
 			}
 			j = 0;
 		}
 		while (((char *)buffer)[i])
-			placeholder1[n++] = ((char *)buffer)[i++];
+		{
+			placeholder1[n] = ((char *)buffer)[i];
+			n++;
+			i++;
+		}
 		i = 0;
 		if (buffer_check(((char *)buffer), BUFFER_SIZE) > 0)	//meaning that there is a positive (found nl)
 		{
@@ -154,11 +163,15 @@ char	*get_next_line(int fd)
 			}
 			placeholder2[i] = '\n';
 			//to reset pointer such that we can use leftover for the next leftovers
+			/*
 			if (strlen(leftover) > 0)
 				free(leftover);
+			*/
 			//to store the value of i so that it isn't lost (i is now the value after the newline character)
 			l = ++i;
 			//while l which is also same as i is not the null terminating character
+			//this could be an issue where it's trying to read something not accessible such as a null terminating character
+			//in which case I might need a character pointer which is set to after the \n and use strlen(that_pointer) as the condition for entering the loop
 			while (placeholder1[l])
 			{
 				//k will be used to know how much to malloc/calloc
