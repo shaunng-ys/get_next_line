@@ -33,7 +33,7 @@ int	main(void)
 }
 */
 
-char	*get_next_line(int fd)
+char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like
 {
 	//can sort of see how static n would be important for multiple gnl calls but somehow even on a single call, without making it static, it segfaults
 	static char *leftover;
