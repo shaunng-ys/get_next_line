@@ -12,6 +12,7 @@
 
 #include "get_next_line.h"
 
+/*
 int	main(void)
 {
 	size_t	n;
@@ -24,12 +25,13 @@ int	main(void)
 	line = get_next_line(n);
 	while (line)
 	{
-		printf("This is supposed to be the line before new line: %s\n", line);
+		printf("Line returned from gnl: %s\n", line);
 		free(line);
 		line = get_next_line(n);
 	}
 	return (0);
 }
+*/
 
 char	*get_next_line(int fd)
 {
@@ -41,16 +43,16 @@ char	*get_next_line(int fd)
 	size_t	j;
 	size_t	k;
 	size_t	l;
-	size_t	readiter;
+	//size_t	readiter;
 	int	readvalue;
-	size_t	index;
-	void	*temp;
+	//size_t	index;
+	//void	*temp;
 	void	*buffer;
 	char	*placeholder1;
 	size_t	pl_index;
 	char	*placeholder2;
 	//size_t	p2_index;
-	char	*ptr2line;
+	//char	*ptr2line;
 
 	count = 0;
 	i = 0;
@@ -63,7 +65,7 @@ char	*get_next_line(int fd)
 	//p2_index = 0;
 	//this buffer is to store the read data from the read function call (but how much to malloc?)
 	//use calloc heren
-	index = BUFFER_SIZE;
+	//index = BUFFER_SIZE;
 	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	
 	placeholder1 = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
@@ -75,12 +77,12 @@ char	*get_next_line(int fd)
 	You can use lseek to change the current position.
 	*/
 	//might be an issue where leftover is unitialised in the first instance/ iteration/ function call of gnl
-	if (leftover != NULL)
+	if (leftover != NULL) //|| *leftover != '\0')
 	{
 		if (strlen(leftover) > 0)
 		//if (leftover[0])
 		{
-			printf("Now commencing operation: no character left behind! - Characters to be saved: %s\n", leftover);
+			printf("Operation no character left behind commencing! - Characters to be saved: %s\n", leftover);
 			free(placeholder1);
 			placeholder1 = ft_calloc(strlen(leftover) + 1, sizeof(char));
 			while (count < strlen(leftover))
@@ -88,11 +90,12 @@ char	*get_next_line(int fd)
 				placeholder1[count] = leftover[count];
 				count++;
 			}
-			printf("Characters that have been saved: %s\n", placeholder1);
+			printf("Character/s saved: %s\n", placeholder1);
+			printf("An attempt will now be made to free leftover\n");
 			free(leftover);
+			printf("Leftover has been succcessfully freed!\n");
 		}
 	}
-
 	while (readvalue > 0)
 	{
 		/*
@@ -111,8 +114,12 @@ char	*get_next_line(int fd)
 		//read(int fildes, void *buf, size_t nbyte);
 		readvalue = read(fd, buffer, BUFFER_SIZE);
 		if (readvalue == 0)
-			break;
-		printf("This is in the buffer: %s & this is the rv: %d\n", (char *)buffer, readvalue);
+		{	
+			printf("The EOF was found, read value is: %d\n", readvalue);
+			return (NULL);
+		}
+			//break;
+		//printf("This is in the buffer: %s & this is the rv: %d\n", (char *)buffer, readvalue);
 		free(placeholder2);
 		//need to account for leftover - to be done
 		//what would happen in the instance where placeholder1 is empty, could this happen?
@@ -124,7 +131,7 @@ char	*get_next_line(int fd)
 			{
 				placeholder2[pl_index] = placeholder1[pl_index];
 				pl_index++;
-				printf("loop1: placeholder1: %s, placeholder2: %s\n", placeholder1, placeholder2);
+				//printf("loop1: placeholder1: %s, placeholder2: %s\n", placeholder1, placeholder2);
 			}
 			pl_index = 0;
 			//printf("This is placeholder2: %s\n", placeholder2);//might need to reset the above 2 indices
@@ -138,13 +145,15 @@ char	*get_next_line(int fd)
 			while (placeholder2[j])
 			{
 				placeholder1[j] = placeholder2[j];
-				printf("loop2: placeholder2: %s, placeholder1: %s\n", placeholder2, placeholder1);
+				//printf("loop2: placeholder2: %s, placeholder1: %s\n", placeholder2, placeholder1);
 				j++;
 			}
 			j = 0;
 		}
+		//n is now the index after the initial characters from previous iterations of the loop
+		n = strlen(placeholder2);
 		while (((char *)buffer)[i])
-		{
+		{	
 			placeholder1[n] = ((char *)buffer)[i];
 			n++;
 			i++;
@@ -184,18 +193,22 @@ char	*get_next_line(int fd)
 			//this part is to assign the characters after nl for the next call of gnl (so that characters are not lost)
 			while (placeholder1[i])
 				leftover[k++] = placeholder1[i++];
+			free(placeholder1);
 			return (placeholder2);
 	       	}
-		readiter++;
+		//readiter++;
 	}
+	/*
 	if (buffer_check(((char *)buffer), BUFFER_SIZE) == 0)
 	{	
-		return (placeholder1);
-	//if (readvalue == 0)//Meaning EOF found
 		printf("The EOF was found, read value is 0: %d\n", readvalue);
+		return (NULL);
+	//if (readvalue == 0)//Meaning EOF found
 	}
+	*/
 }
 
+/*
 //while loop to check buffer for nl or null terminating character, and creating line to be returned
 int	buffer_check(char *buffer, size_t index)
 {
@@ -207,13 +220,7 @@ int	buffer_check(char *buffer, size_t index)
 	while (index--)
 	{
 		if (((char *)buffer)[i] == '\n')
-		{	
-			/*
-			fp = ft_calloc(n + 2, sizeof(char));
-			read(fd, fp, n);
-			*/
 			return (i + 2); //i + 1 maybe to indicate how many more to calloc for line that is to be returned
-		}
 		else
 		{
 			//n++;
@@ -222,3 +229,4 @@ int	buffer_check(char *buffer, size_t index)
 	}
 	return (0);
 }
+*/
