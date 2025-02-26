@@ -12,7 +12,7 @@
 
 #include "get_next_line.h"
 
-/*
+
 int	main(void)
 {
 	size_t	n;
@@ -31,9 +31,9 @@ int	main(void)
 	}
 	return (0);
 }
-*/
 
-char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like
+
+char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, you can name my balls
 {
 	//can sort of see how static n would be important for multiple gnl calls but somehow even on a single call, without making it static, it segfaults
 	static char *leftover;
