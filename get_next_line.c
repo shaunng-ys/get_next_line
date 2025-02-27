@@ -12,7 +12,7 @@
 
 #include "get_next_line.h"
 
-
+/*
 int	main(void)
 {
 	size_t	n;
@@ -30,6 +30,7 @@ int	main(void)
 	}
 	return (0);
 }
+*/
 
 
 
@@ -81,11 +82,9 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 	}
 	while (readvalue > 0)
 	{
-		/*
 		if (strlen(buffer) > 0)
 			free(buffer);
 		buffer = ft_calloc(BUFFER_SIZE + 1, 1);
-		*/
 		//read(int fildes, void *buf, size_t nbyte);
 		readvalue = read(fd, buffer, BUFFER_SIZE);
 		if (readvalue == 0 && strlen(placeholder1) > 0)
