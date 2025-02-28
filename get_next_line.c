@@ -33,7 +33,6 @@ int	main(void)
 */
 
 
-
 char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, you can name my balls
 {
 	static char *leftover;
@@ -57,6 +56,9 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 	readvalue = 5;
 	pl_index = 0;
 	n = 0;
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
 	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	
 	placeholder1 = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
@@ -83,15 +85,22 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 	while (readvalue > 0)
 	{
 		if (strlen(buffer) > 0)
+		{
 			free(buffer);
-		buffer = ft_calloc(BUFFER_SIZE + 1, 1);
+			buffer = ft_calloc(BUFFER_SIZE + 1, 1);
+		}
 		//read(int fildes, void *buf, size_t nbyte);
 		readvalue = read(fd, buffer, BUFFER_SIZE);
 		if (readvalue == 0 && strlen(placeholder1) > 0)
 			return (placeholder1);
 			//printf("The EOF was found, read value is: %d\n", readvalue);
 		if (readvalue == 0)
+		{
+			free(placeholder1);
+			free(placeholder2);
+			free(buffer);
 			return (NULL);
+		}
 		free(placeholder2);
 		placeholder2 = ft_calloc(strlen(placeholder1) + 1, 1);
 		//moving the line directly below from the if conditional below fixed the issue, but why?
@@ -154,6 +163,7 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 			while (placeholder1[i])
 				leftover[k++] = placeholder1[i++];
 			free(placeholder1);
+			free(buffer);
 			return (placeholder2);
 	       	}
 	}
