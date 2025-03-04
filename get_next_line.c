@@ -12,14 +12,14 @@
 
 #include "get_next_line.h"
 
-/*
+
 int	main(void)
 {
 	size_t	n;
 	char	*line;
 	//n would be file descriptor i.e. an integer used to uniquely identify an open file
-	n = open("tester.txt", O_RDONLY);
-	FILE*	ptr = fopen("tester.txt", "r");
+	n = open("multiple_line_no_nl.txt", O_RDONLY);
+	FILE*	ptr = fopen("multiple_line_no_nl.txt", "r");
 	fseek(ptr, 0, SEEK_SET);
 	line = get_next_line(n);
 	while (line)
@@ -30,7 +30,8 @@ int	main(void)
 	}
 	return (0);
 }
-*/
+
+
 
 
 char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, you can name my balls
@@ -68,7 +69,7 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 	//the line below is to guard against reads into the string where it isn't initialized, causing a segfault
 	if (leftover != NULL) 
 	{
-		//printf("Successfully breached the NULL condition\n");
+		//printf("Passed the NULL condition because leftover != NULL\n\n");
 		if (leftover[0] != '\0') //&& strlen(leftover) > 0) //|| *leftover != '\0')
 		//if (strlen(leftover) > 0) //|| *leftover != '\0')
 		//if (strlen(leftover) > 0)
@@ -81,21 +82,35 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 				placeholder1 = ft_calloc(2/*strlen(leftover)*/, sizeof(char));
 				placeholder1[count] = '\n';
 				leftover++;
-				m++;
+				return (placeholder1);
+				//m++;
 			}
 			else
 			{
 				while (leftover[m] != '\n' && leftover[m])
 					m++;
 				placeholder1 = ft_calloc(m/*strlen(leftover)*/ + 2, sizeof(char));
-				while (count <= m)//strlen(leftover))
+				while (count < m)//strlen(leftover))
 				{
 					placeholder1[count] = leftover[count];
 					count++;
 				}
-				leftover = leftover + m + 1;
+				if (leftover[m] == '\n')
+				{
+					placeholder1[count] = '\n';
+					//printf("An attempt has been made to add a nl to the end of placeholder\n\n");
+					//printf("This is the string in placeholder1 now: %s\n\n", placeholder1);
+					leftover = leftover + m + 2;
+					//printf("This is where leftover starts now (after nl): %c\n\n", leftover[0]);
+					return (placeholder1);
+				}
+				else
+				{
+					leftover = leftover + m + 1;
+					//printf("This is where leftover starts now: %c\n\n", leftover[0]);
+				}
 			}
-			//printf("This is m: %zu\n", m);
+			//printf("This is m, where m is the no. of chars before nl/ntc: %zu\n\n", m);
 			//placeholder1 = ft_calloc(m/*strlen(leftover)*/ + 1, sizeof(char));
 			//while (count < m)//strlen(leftover))
 			//{
@@ -104,15 +119,26 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 			//}
 			//leftover = leftover + m;
 			//printf("Character/s saved: %s\n", placeholder1);
-			if	(leftover[0] == '\0' && strlen(placeholder1) < 1)
+			if	(leftover != NULL && leftover[0] == '\0')//&& strlen(placeholder1) < 1)
+			//if	(strlen(placeholder1) < 1)
 			{
 				//printf("An attempt will now be made to free leftover\n");
-				free(leftover);
-				//printf("Leftover has been succcessfully freed!\n");
+				//free(leftover);
+				//printf("Leftover is not NULL but starts with a ntc\n\n");//has been succcessfully freed!\n\n");
+				leftover = NULL;
 			}
 			//wonder if leftover = NULL solves the issue (update: doesn't seem to)
 			//leftover = NULL;
 		}
+		if	(leftover != NULL && leftover[0] == '\0')//&& strlen(placeholder1) < 1)
+		//if	(strlen(placeholder1) < 1)
+		{
+			//printf("An attempt will now be made to free leftover\n");
+			//free(leftover);
+			//printf("Leftover is not NULL but starts with a ntc\n\n");//has been succcessfully freed!\n\n");
+			leftover = NULL;
+		}
+
 	}
 	while (readvalue > 0)
 	{
@@ -125,7 +151,8 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 		//now my goal is to not read the buffer while leftover still has content and while placeholder still has content
 		//if (strlen(leftover) < 1)
 		readvalue = read(fd, buffer, BUFFER_SIZE);
-		//printf("This is the readvalue: %d\n", readvalue);
+		//printf("Read function used, readvalue = %d\n\n", readvalue);
+		//printf("This is what's in the buffer now: %s\n\n", (char *)buffer);
 		if (readvalue == 0 && strlen(placeholder1) > 0)
 		{
 			free(buffer);
@@ -133,6 +160,7 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 			//free(leftover);
 			//leftover = NULL;
 			//printf("The EOF was found, read value is: %d, placeholder1 returned\n", readvalue);
+			//printf("Placeholder1 is about to be returned from the gnl function\n\n");
 			return (placeholder1);
 		}
 		else if (readvalue == 0 && leftover == NULL)//leftover[0] == '\0')
@@ -140,9 +168,10 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 			free(placeholder1);
 			free(placeholder2);
 			free(buffer);
-			leftover = NULL;
+			//leftover = NULL;
 			//free(leftover);
 			//printf("The EOF was found, read value is: %d, NULL returned\n", readvalue);
+			//printf("NULL is about to be returned\n\n");
 			return (NULL);
 		}
 		free(placeholder2);
@@ -186,7 +215,7 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 			//printf("Entered if statement because passed buffer check\n");
 			free(placeholder2);
 			placeholder2 = ft_calloc(strlen(placeholder1) + 1, 1);
-	       		while (placeholder1[i] != '\n')
+			while (placeholder1[i] != '\n')
 			{
 			 	placeholder2[i] = placeholder1[i];
 				i++;
@@ -207,26 +236,29 @@ char	*get_next_line(int fd) //suck it alex, I'll name my variables how I like, y
 				}
 				//is the below condition necessary?
 				//if (leftover == NULL)
-				//{
 					//free(leftover);
-				leftover = ft_calloc(k + 1, sizeof(char));
-				//printf("leftover has been calloc'd via if statement #1, calloc'd char spaces = %zu\n", (k + 1));
-				//}
+				//printf("Memory space for leftover is now needed\n\n");
+				leftover = ft_calloc(k + 2, sizeof(char));
+					//printf("leftover has been calloc'd via if statement #1, calloc'd char spaces = %zu\n", (k + 2));
 				k = 0;
 				while (placeholder1[i])
 					leftover[k++] = placeholder1[i++];
+				//printf("This is what's in leftover at this point: %s\n\n", leftover);
 			}
 			free(placeholder1);
 			free(buffer);
+			//printf("Placeholder2 is about to be returned\n\n");
 			return (placeholder2);
 	       	}
-		else
+		/*
+		else if (leftover[0] == '\0')
 		{
 			//printf("leftover will now be calloc'd and the pointer set to NULL\n");
 			leftover = ft_calloc(2, sizeof(char));
 			leftover = NULL;
 			//printf("leftover should now be NULL\n");
 		}
+		*/
 	}
 	return (NULL);
 	/*
