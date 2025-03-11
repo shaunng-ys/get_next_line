@@ -94,6 +94,11 @@ char	*get_next_line(int fd)
 				}
 				free(placeholder2);
 				free(buffer);
+				if (leftover[0] == '\0')
+				{
+					free(leftover);
+					leftover = NULL;
+				}
 				return (placeholder1);
 			}
 			else
