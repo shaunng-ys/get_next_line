@@ -82,7 +82,7 @@ char	*get_next_line(int fd)
 				free(placeholder2);
 				placeholder2 = ft_calloc(strlen(leftover), sizeof(char));
 				while(leftover[++i])
-					placeholder2[j] = leftover[i];
+					placeholder2[j++] = leftover[i];
 				i = 0;
 				j = 0;
 				free(leftover);
